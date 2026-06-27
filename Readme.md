@@ -2,6 +2,7 @@
 
 本文件夹包含 **DeltaForce-Locker** 项目的**电脑端完整源代码**，主要演示基于**图像识别 + 模拟输入**的“画面吸附”效果，仅供技术学习与原理验证使用。
 >5L2G5YW25a6e5Lul5LiK5YWo5piv6aqX5L2g55qE77yM6L+Z5Y+q5piv5Liq5biu5L2g5a6J6KOF5pqX5Yy656qB5Zu055qE5Y+N5L2c5byK6aG555uu572i5LqG
+
 ---
 
 ## ⭐ 如何获取本项目（电脑端）
@@ -30,13 +31,27 @@
 
 ---
 
+## 🆕 最新更新（2026-06-27）
+
+- **🎯 S10赛季新地图适配（核电站AZ3）**：针对新地图中新增的“容器防护服”进行了专项隔离处理。此前V3版本模型易将该类防护服误判为真人目标，V4版本中已通过专属特征标注将其单独归类为非人单位，有效消除误触发。
+
+  <div align="center">
+    <img src="https://github.com/ace-trump-tech/DeltaForce-Locker/blob/main/Mobile/Protective_suit.jpg?raw=true" alt="核电站AZ3容器防护服样本" width="400">
+    <br>
+    <em>△ 核电站AZ3地图中的容器防护服（V3版本曾误判为真人）</em>
+  </div>
+
+- **🧠 识别逻辑增强**：在视觉识别管线中新增了特定轮廓过滤层，确保容器防护服不再参与目标锁定计算，大幅提升复杂场景下的识别纯净度。
+
+---
+
 ## 📁 项目目录结构
 
 ```plaintext
 Desktop/
 ├── core/           # 核心模块（画面捕获、目标检测、鼠标模拟等）
 ├── data/           # 资源数据（如音频文件、加密数据等）
-├── models/         # YOLO 目标检测模型相关封装
+├── models/         # 目标检测模型相关文件（权重、配置等）
 ├── utils/          # 辅助工具函数（加密、路径处理、注册表操作等）
 ├── .gitignore      # Git 忽略规则
 ├── README.md       # 本说明文档
@@ -50,11 +65,25 @@ Desktop/
 
 ## 🎯 功能特点
 
+- **V4.0.0 新特性**：针对 S10 赛季核电站 AZ3 地图新增的“容器防护服”进行非人标注与隔离，彻底解决 V3 版本将防护服误判为真人目标的问题。
 - **双重启动流程**：程序要求**先运行 `gui.py`** 绘制基础操作界面框（模拟普通程序行为，用于辅助绕过检测）；**再运行 `main.py`** 执行实际的主逻辑（画面捕获 → 目标检测 → 模拟输入），两者结合构成完整的抗分析启动流程。
-- **YOLOv12 目标检测**：提供 `yolo/` 子目录，内含 YOLOv12 完整模型代码与使用说明，支持 CPU / GPU 推理，可识别人物、头部等目标。
+- **目标检测模块**：内置基于 OpenCV 及轻量级视觉识别方法的人物/头部检测流程，支持 CPU 推理，无需额外硬件加速。
 - **窗口级画面捕获**：支持捕获指定游戏窗口或 OBS 虚拟摄像头画面，兼容窗口化 / 无边框模式。
 - **平滑鼠标模拟**：采用 SendInput / pynput 等底层 API 模拟鼠标移动，支持平滑轨迹与灵敏度调节。
 - **多种隐蔽机制**：演示动态路径隐藏、注册表操作规避静态扫描等思路。
+
+---
+
+## 📜 版本更迭简史（技术演进路线）
+
+| 版本 | 主要技术演进 | 学习重点 |
+|------|-------------|----------|
+| **V1.x** | 基础图像识别 + OBS 捕获 + 简单鼠标移动 | OpenCV、图像处理、模拟输入入门 |
+| **V2.x** | 动态路径隐藏、Base64编码、光斑视觉中心算法 | 反静态检测、坐标变换、多帧投票 |
+| **V3.x** | 腾讯管家吸附原理验证、兼容性探讨 | 窗口穿透技术、输入模拟边界、环境适配 |
+| **V4.x** | **S10赛季专项优化（核电站AZ3）** | **容器防护服隔离、非人目标标注、复杂场景误报抑制** |
+
+> 💡 **为什么不断迭代？** 游戏安全策略会更新，静态方法很快失效。本项目的价值在于展示 **如何根据环境变化调整技术方案**。
 
 ---
 
@@ -65,7 +94,7 @@ Desktop/
 - 操作系统：Windows 10 / 11 (64位)
 - Python版本：3.8 ～ 3.11
 - 已安装 [OBS Studio](https://obsproject.com/) 并开启虚拟摄像头（如使用 OBS 采集源）
-- 推荐 NVIDIA 显卡 + CUDA 11.8+ 以加速 YOLO 推理
+- 无需独立显卡，CPU 即可运行
 
 ### 2️⃣ 安装依赖
 
@@ -89,7 +118,7 @@ pip install -r requirements.txt
 |------------------|----------------------------------------------------|----------------------------|
 | `capture.source` | 画面源类型，可选 `window` / `obs` / `screen`       | `window`                   |
 | `capture.window` | 目标窗口标题关键词（不区分大小写）                 | `"DeltaForce"`             |
-| `model.path`     | YOLO 模型权重文件路径（支持 .pt 或 ONNX）          | `"yolov8n.pt"`             |
+| `model.path`     | 目标检测模型权重文件路径（支持 .pt / .onnx 等）    | `"models/best.pt"`         |
 | `model.conf`     | 检测置信度阈值（0~1）                              | `0.5`                      |
 | `mouse.speed`    | 鼠标移动速度系数                                  | `0.6`                      |
 | `mouse.smooth`   | 是否启用平滑移动                                   | `true`                     |
@@ -124,11 +153,11 @@ capture:
 
 # 目标检测配置
 detection:
-  model: "models/weights/best.pt"
+  model: "models/best.pt"
   conf_threshold: 0.5
   iou_threshold: 0.45
-  device: "cuda"          # 或 "cpu"
-  imgsz: 640              # 输入图像尺寸
+  device: "cpu"           # 仅支持 cpu
+  imgsz: 640              # 输入图像尺寸（如适用）
 
 # 鼠标模拟配置
 mouse:
@@ -170,18 +199,18 @@ A:
 - 尝试切换 `capture.source` 为 `screen` 全屏捕获进行测试。
 - 部分杀毒软件可能会拦截模拟输入，请临时关闭或添加信任。
 
-### Q4: 想要了解 YOLO 模型训练与自定义检测？
+### Q4: 如何更换或自定义检测模型？
 
 A: 
-- 请参考主仓库的 [`yolo/`](https://github.com/ace-trump-tech/DeltaForce-OBS-Locker/blob/main/yolo/README.md) 目录，内含完整 YOLOv12 模型代码、安装指南、训练脚本及自定义数据集教程。
-- 若需训练专用于本项目的模型，可按 `yolo/README.md` 中的步骤收集标注数据并执行训练，然后将训练好的 `.pt` 文件路径填入 `config.yaml` 的 `model.path`。
+- 本项目的检测模块采用可插拔设计，您可以将自己的模型权重（如 ONNX、PyTorch 等）放置在 `models/` 目录，并在 `config.yaml` 的 `model.path` 中指定路径。
+- 如需修改检测逻辑，可参考 `core/detector.py` 中的接口进行扩展。具体实现细节请查阅源代码注释。
 
 ### Q5: 如何获得更稳定的检测效果？
 
 A: 
 - 尽量在光线充足、背景简单的场景下使用。
-- 调整 `config.yaml` 中的 `conf_threshold` 降低虚警率，或提高 `imgsz` 增强小目标检测能力。
-- 选用更大的 YOLO 模型（如 `yolov8l.pt` 或 `yolov12x.pt`），但会降低推理速度。
+- 调整 `config.yaml` 中的 `conf_threshold` 降低虚警率。
+- 适当调整 `imgsz` 或优化模型输入预处理。
 
 ---
 
@@ -196,7 +225,6 @@ A:
 ## 🔗 相关链接
 
 - 主项目 README：[DeltaForce-OBS-Locker](https://github.com/ace-trump-tech/DeltaForce-OBS-Locker)
-- YOLO模型训练与使用教程：[`yolo/README.md`](https://github.com/ace-trump-tech/DeltaForce-OBS-Locker/blob/main/yolo/README.md)
 - 手机端项目：[Mobile端 README](https://github.com/ace-trump-tech/DeltaForce-Locker/blob/main/Mobile/README.md)
 
 ---
@@ -205,4 +233,8 @@ A:
 
 [MIT License](https://opensource.org/licenses/MIT) —— 允许自由修改与二次开发，但禁止用于商业作弊软件。
 
-*最后更新：2026-06-15*
+*最后更新：2026-06-27*
+
+- 统一版本号为 V4.0.0，日期更新至 2026-06-27
+
+如果还有其他需要调整的地方，请告诉我。
