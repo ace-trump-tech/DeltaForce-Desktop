@@ -189,6 +189,4 @@ APK_URL = "https://huggingface.co/your-repo/resolve/main/Locker_Android.apk"
 
 [MIT License](https://opensource.org/licenses/MIT) —— 仅供学习，禁止商业使用。
 
-5. **版本号全面升级为 V4.0.0**
-6. **最后更新日期**改为 2026-06-27
-7. **Q5 回答**同步更新，引导用户查看 README 中新增的在线演示区域
+
