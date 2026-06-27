@@ -2,6 +2,7 @@
 
 本文件夹包含 **DeltaForce-Locker** 项目的**手机端 APK 自动下载脚本**及演示素材。
 > 6ICD5b6X5LiK5aSn5a2m5ZCX77yM5L2g5bCx5byA5oyC
+
 ---
 
 ## ⭐ 如何获取本项目（手机端）
@@ -21,11 +22,49 @@
 
 ---
 
+## 🆕 最新更新（2026-06-27）
+
+- **🎯 S10赛季新地图适配（核电站AZ3）**：针对新地图中新增的“容器防护服”进行了专项隔离处理。此前V3版本模型易将该类防护服误判为真人目标，V4版本中已通过专属特征标注将其单独归类为非人单位，有效消除误触发。
+
+  <div align="center">
+    <img src="https://github.com/ace-trump-tech/DeltaForce-Locker/blob/main/Mobile/Protective_suit.jpg?raw=true" alt="核电站AZ3容器防护服样本" width="400">
+    <br>
+    <em>△ 核电站AZ3地图中的容器防护服（V3版本曾误判为真人）</em>
+  </div>
+
+- **🧠 识别逻辑增强**：在视觉识别管线中新增了特定轮廓过滤层，确保容器防护服不再参与目标锁定计算，大幅提升复杂场景下的识别纯净度。
+
+---
+
+## 🎥 功能演示
+
+<div align="center">
+  <img src="https://github.com/ace-trump-tech/DeltaForce-Locker/blob/main/Mobile/demo_video.gif?raw=true" alt="手机端功能演示" width="400">
+  <br>
+  <em>手机端 APK 核心效果（画面吸附 / 模拟输入演示）</em>
+</div>
+
+---
+
 ## 📱 功能说明
 
+- **V4.0.0 新特性**：针对 S10 赛季核电站 AZ3 地图新增的“容器防护服”进行非人标注与隔离，彻底解决 V3 版本将防护服误判为真人目标的问题。
 - 提供 Python 脚本 `download_apk.py`，用于从 **Hugging Face** 自动下载 `Locker_Android.apk`（手机端辅助程序）。
 - 包含演示素材：`demo.png`（操作流程图）、`demo_video.gif` / `demo_video.mp4`（功能演示视频）。
 - APK 安装后，可在 Android 设备上演示**画面吸附 / 模拟触摸输入**效果（仅供学习）。
+
+---
+
+## 📜 版本更迭简史（技术演进路线）
+
+| 版本 | 主要技术演进 | 学习重点 |
+|------|-------------|----------|
+| **V1.x** | 基础图像识别 + 简单触摸模拟 | OpenCV、图像处理、模拟输入入门 |
+| **V2.x** | 动态路径隐藏、光斑视觉中心算法 | 反静态检测、坐标变换、多帧投票 |
+| **V3.x** | 腾讯管家吸附原理验证、兼容性探讨 | 窗口穿透技术、输入模拟边界、环境适配 |
+| **V4.x** | **S10赛季专项优化（核电站AZ3）** | **容器防护服隔离、非人目标标注、复杂场景误报抑制** |
+
+> 💡 **为什么不断迭代？** 游戏安全策略会更新，静态方法很快失效。本项目的价值在于展示 **如何根据环境变化调整技术方案**。
 
 ---
 
@@ -77,7 +116,7 @@ python download_apk.py
 4. **启动辅助**：点击悬浮窗上的“开始”按钮，应用会自动识别画面中的目标并模拟触摸滑动。
 5. **调整参数**：可通过悬浮窗菜单调节灵敏度、平滑度等。
 
-> 详细演示效果请观看 `demo_video.gif` 或 `demo_video.mp4`。
+> 详细演示效果请观看上方 **功能演示** 中的 GIF 动画，或查看 `demo_video.gif` / `demo_video.mp4`。
 
 ---
 
@@ -123,7 +162,7 @@ APK_URL = "https://huggingface.co/your-repo/resolve/main/Locker_Android.apk"
 
 **A**: 
 - `demo_video.gif` 和 `demo_video.mp4` 均为标准格式，请使用支持该格式的图片/视频查看器。
-- 如需在线观看，可访问主仓库的 README 中的链接。
+- 如需在线观看，可访问本 README 上方的 **功能演示** 区域，或主仓库 README 中的链接。
 
 ---
 
@@ -150,4 +189,6 @@ APK_URL = "https://huggingface.co/your-repo/resolve/main/Locker_Android.apk"
 
 [MIT License](https://opensource.org/licenses/MIT) —— 仅供学习，禁止商业使用。
 
-*最后更新：2026-06-15*
+5. **版本号全面升级为 V4.0.0**
+6. **最后更新日期**改为 2026-06-27
+7. **Q5 回答**同步更新，引导用户查看 README 中新增的在线演示区域
